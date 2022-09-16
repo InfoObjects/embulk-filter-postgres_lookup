@@ -77,7 +77,7 @@ task gemspec {
 Gem::Specification.new do |spec|
   spec.name          = "${project.name}"
   spec.version       = "${project.version}"
-  spec.authors       = ["Abhishek-Gupta4"]
+  spec.authors       = ["Infoobjects Inc."]
   spec.summary       = %[Postgress Lookup filter plugin for Embulk]
   spec.description   = %[Postgress Lookup]
   spec.email         = ["abhishek.gupta4@fisglobal.com"]

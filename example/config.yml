@@ -3,7 +3,7 @@ exec:
   min_output_tasks: 1
 in:
   type: file
-  path_prefix: C:\Users\Abhishek Gupta\Desktop\new one\embulk-filter-postgress_lookup\calendar.csv
+  path_prefix: C:\Users\Abhishek Gupta\Desktop\github\embulk-filter-postgres_lookup\calendar.csv
   parser:
     type: csv
     columns:
@@ -17,7 +17,7 @@ filters:
     host: localhost
     port: 5432
     database: Abhishek
-    tablename: country
+    table: country
     username: postgres
     password: root
     mapping_from:
@@ -34,7 +34,7 @@ filters:
     host: localhost
     port: 5432
     database: Abhishek
-    tablename: country
+    table: country
     username: postgres
     password: root
     mapping_from:

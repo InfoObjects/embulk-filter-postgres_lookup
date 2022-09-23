@@ -34,7 +34,7 @@ public class PostgressLookupFilterPlugin
         @Config("database")
         public String getDatabase();
 
-        @Config("tablename")
+        @Config("table")
         public String getTableName();
 
         @Config("username")

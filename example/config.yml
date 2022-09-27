@@ -13,7 +13,6 @@ in:
       - { name: attr_1, type: string }
 filters:
   - type: postgress_lookup
-    lookup_destination: mysql
     host: localhost
     port: 5432
     database: Abhishek
@@ -30,7 +29,6 @@ filters:
       - { name: country_name, type: string }
       - { name: country_address, type: string }
   - type: postgress_lookup
-    lookup_destination: mysql
     host: localhost
     port: 5432
     database: Abhishek

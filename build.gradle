@@ -13,7 +13,7 @@ configurations {
     provided
 }
 
-version = "0.1.0"
+version = "0.1.2"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -23,8 +23,8 @@ dependencies {
     provided "org.embulk:embulk-core:0.9.8"
     // compile "YOUR_JAR_DEPENDENCY_GROUP:YOUR_JAR_DEPENDENCY_MODULE:YOUR_JAR_DEPENDENCY_VERSION"
     testCompile "junit:junit:4.+"
-//    compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.19'
-//    compile group: 'postgresql', name: 'postgresql', version: '9.0-801.jdbc4'
+    compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.19'
+    compile group: 'postgresql', name: 'postgresql', version: '9.0-801.jdbc4'
 }
 
 task classpath(type: Copy, dependsOn: ["jar"]) {

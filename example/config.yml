@@ -13,22 +13,9 @@ in:
       - { name: attr_1, type: string }
 filters:
   - type: postgress_lookup
-    host: localhost
-    port: 5432
-    database: Abhishek
-    table: country
-    username: postgres
-    password: root
-    mapping_from:
-      - quarter_number
-      - attr_1
-    mapping_to:
-      - id
-      - country_address
-    new_columns:
-      - { name: country_name, type: string }
-      - { name: country_address, type: string }
-  - type: postgress_lookup
+    driver_path: C:/Users/Abhishek Gupta/Desktop/postgresql-9.0-801.jdbc4.jar
+    driver_class: org.postgresql.Driver
+    schema_name: testSchema
     host: localhost
     port: 5432
     database: Abhishek

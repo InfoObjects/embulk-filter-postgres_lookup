@@ -2,23 +2,14 @@ package org.embulk.filter.postgress_lookup;
 
 
 import com.google.common.collect.ImmutableList;
-import org.embulk.config.Config;
-import org.embulk.config.ConfigSource;
-import org.embulk.config.Task;
-import org.embulk.config.TaskSource;
+import org.embulk.config.*;
 import org.embulk.spi.*;
 import org.embulk.spi.time.Timestamp;
 import org.embulk.spi.type.Types;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PostgressLookupFilterPlugin
         implements FilterPlugin {
@@ -51,6 +42,19 @@ public class PostgressLookupFilterPlugin
 
         @Config("new_columns")
         public SchemaConfig getNewColumns();
+
+        @Config("driver_path")
+        @ConfigDefault("null")
+        public Optional<String> getDriverPath();
+
+        @Config("driver_class")
+        @ConfigDefault("null")
+        public Optional<String> getDriverClass();
+
+        @Config("schema_name")
+        @ConfigDefault("null")
+        public Optional<String> getSchemaName();
+
     }
 
 
@@ -100,6 +104,22 @@ public class PostgressLookupFilterPlugin
     private Map<String, List<String>> getKeyValueMap(PluginTask task) throws SQLException {
         Map<String, List<String>> map = new HashMap<>();
         Connection con = PostGresConnection.getConnection(task);
+        DatabaseMetaData databaseMetaData =con.getMetaData();
+        String identifierQuoteString=databaseMetaData.getIdentifierQuoteString();
+        //String schemaName=null;
+
+        if (task.getSchemaName().isPresent()) {
+            String sql = "SET search_path TO " + identifierQuoteString + task.getSchemaName().get() + identifierQuoteString;
+            System.out.println(sql);
+
+            Statement stmt = con.createStatement();
+            try {
+                stmt.executeUpdate(sql);
+            } finally {
+                stmt.close();
+            }
+        }
+        con.setAutoCommit(false);
         try {
 
             List<String> targetColumns = task.getMappingTo();

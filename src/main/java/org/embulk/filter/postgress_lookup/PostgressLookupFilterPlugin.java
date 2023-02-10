@@ -218,7 +218,7 @@ public class PostgressLookupFilterPlugin
 
                 for (Column column : inputSchema.getColumns()) {
                     if (reader.isNull(column)) {
-                        if (column.getName().equalsIgnoreCase(inputColumns.get(keyMap.get("Key")))) {
+                        if ((keyMap.get("Key") < inputColumns.size()) && column.getName().equalsIgnoreCase(inputColumns.get(keyMap.get("Key")))) {
                             searchingKeyData.add("");
                             int key = keyMap.get("Key");
                             keyMap.put("Key", ++key);

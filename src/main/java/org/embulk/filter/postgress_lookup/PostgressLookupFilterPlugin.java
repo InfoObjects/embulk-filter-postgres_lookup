@@ -25,7 +25,7 @@ public class PostgressLookupFilterPlugin
         @Config("database")
         public String getDatabase();
 
-        @Config("table")
+        @Config("table_name")
         public String getTableName();
 
         @Config("username")
@@ -208,6 +208,9 @@ public class PostgressLookupFilterPlugin
                 columnConfigList.add(columnConfig);
             }
 
+            List<String> unmatchedData = new ArrayList<>();
+            List<String> keyColumns = task.getMappingFrom();
+
             while (reader.nextRecord()) {
 
                 int colNum = 0;
@@ -254,6 +257,19 @@ public class PostgressLookupFilterPlugin
                     }
                 }
                 builder.addRecord();
+            }
+
+            System.out.println("Unmatched rows.....");
+            System.out.print("Key column names: ");
+            for(int i=0;i<keyColumns.size();i++){
+                System.out.print(keyColumns.get(i));
+                if(i!=keyColumns.size()-1){
+                    System.out.print(",");
+                }
+            }
+            System.out.println();
+            for(int i=0;i<unmatchedData.size();i++){
+                System.out.println(unmatchedData.get(i));
             }
 
         }

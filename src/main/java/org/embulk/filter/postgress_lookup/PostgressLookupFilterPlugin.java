@@ -212,7 +212,7 @@ public class PostgressLookupFilterPlugin
                 columnConfigList.add(columnConfig);
             }
 
-            List<String> unmatchedData = new ArrayList<>();
+            Set<String> unmatchedData = new LinkedHashSet<>();
             List<String> keyColumns = task.getMappingFrom();
 
             while (reader.nextRecord()) {
@@ -271,8 +271,8 @@ public class PostgressLookupFilterPlugin
                 }
             }
             info+="\n";
-            for(int i=0;i<unmatchedData.size();i++){
-                info+= unmatchedData.get(i)+"\n";
+            for(String key: unmatchedData){
+                info+= key+"\n";
             }
             logger.info(info);
 

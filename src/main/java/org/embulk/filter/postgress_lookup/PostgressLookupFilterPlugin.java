@@ -6,6 +6,8 @@ import org.embulk.config.*;
 import org.embulk.spi.*;
 import org.embulk.spi.time.Timestamp;
 import org.embulk.spi.type.Types;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.time.Instant;
@@ -13,6 +15,8 @@ import java.util.*;
 
 public class PostgressLookupFilterPlugin
         implements FilterPlugin {
+    private static final Logger logger = LoggerFactory.getLogger(PostgressLookupFilterPlugin.class);
+
     public interface PluginTask
             extends Task {
 
@@ -259,18 +263,18 @@ public class PostgressLookupFilterPlugin
                 builder.addRecord();
             }
 
-            System.out.println("Unmatched rows.....");
-            System.out.print("Key column names: ");
+            String info="\n--------------------Unmatched rows.....................\nMapping Key Columns: ";
             for(int i=0;i<keyColumns.size();i++){
-                System.out.print(keyColumns.get(i));
+                info+= keyColumns.get(i);
                 if(i!=keyColumns.size()-1){
-                    System.out.print(",");
+                    info+=",";
                 }
             }
-            System.out.println();
+            info+="\n";
             for(int i=0;i<unmatchedData.size();i++){
-                System.out.println(unmatchedData.get(i));
+                info+= unmatchedData.get(i)+"\n";
             }
+            logger.info(info);
 
         }
 

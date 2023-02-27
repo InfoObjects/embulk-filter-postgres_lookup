@@ -9,7 +9,7 @@ in:
   user: "usert"
   password: "password"
   database: "test"
-  table: database_table
+  table: customer
 filters:
   - type: postgress_lookup
     host: localhost
@@ -18,17 +18,17 @@ filters:
     username: postgres
     password: 1234
     schema: public
-    table_name: lookup_table
+    table_name: car
     mapping_from:
-    - id
-    - name
+      - car_name
+      - company
     mapping_to:
-    - id
-    - name
+      - model
+      - brand
     new_columns:
-     - { name: pin, type: string }
-     - { name: gender, type: string }
-     - { name: phone_number, type: string }
+      - { name: car_id, type: string }
+      - { name: category, type: string }
+      - { name: fuel_capacity, type: string }
 out:
   type: sqlserver
   host: Localhost
@@ -36,6 +36,6 @@ out:
   user: "usert"
   password: "password"
   database: "test"
-  table: output_table_1
+  table: output_table
   mode: truncate_insert 
 

@@ -12,7 +12,7 @@ From strategy, to implementation, to ongoing managed services, Infoobjects creat
 An Embulk filter plugin for Lookup Transformation with Postgres database
 ​
 - **postgres_lookup**: Required attributes for the LookUp Filter Plugin -
-    - **driver_path**: driver path for your driver which you installed in your system (example `C:/Users/Abhishek Gupta/Desktop/postgresql-9.0-801.jdbc4.jar`)
+    - **driver_path**: driver path for your driver which you installed in your system (example `....Path..../jarname.jar`)
     - **driver_class**: driver class name (example `org.postgresql.Driver`)
     - **schema_name**: schema name (example `testSchema`)
     - **host**: database host (example `localhost`) (required)

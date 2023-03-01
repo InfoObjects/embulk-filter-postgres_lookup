@@ -28,9 +28,9 @@ public class PostGresConnection {
         try{
            // Class.forName("org.postgresql.Driver");
             if(task.getDriverClass().isPresent()){
-                this.loadMySqlJdbcDriver(task.getDriverClass().get(),task.getDriverPath());
+                this.loadPostgressJdbcDriver(task.getDriverClass().get(),task.getDriverPath());
             }else{
-                this.loadMySqlJdbcDriver("org.postgresql.Driver",task.getDriverPath());
+                this.loadPostgressJdbcDriver("org.postgresql.Driver",task.getDriverPath());
             }
             String url = "jdbc:postgresql://" + task.getHost() + ":"+task.getPort()+"/"+task.getDatabase();
             connection= DriverManager.getConnection(url, task.getUserName(), task.getPassword());
@@ -58,68 +58,71 @@ public class PostGresConnection {
 
         return connection;
     }
-    private Class<? extends java.sql.Driver> loadMySqlJdbcDriver(
+    private Class<? extends java.sql.Driver> loadPostgressJdbcDriver(
             final String className,
             final Optional<String> driverPath)
     {
-        synchronized (mysqlJdbcDriver) {
-            if (mysqlJdbcDriver.get() != null) {
-                return mysqlJdbcDriver.get();
+        synchronized (postgressJdbcDriver) {
+            if (postgressJdbcDriver.get() != null) {
+                return postgressJdbcDriver.get();
             }
-
+            if (driverPath.isPresent()) {
+                logger.info(
+                        "\"driver_path\" is set to load the Postgress JDBC driver class \"{}\". Adding it to classpath.", className);
+                this.addDriverJarToClasspath(driverPath.get());
+            }
             try {
                 // If the class is found from the ClassLoader of the plugin, that is prioritized the highest.
                 final Class<? extends java.sql.Driver> found = loadJdbcDriverClassForName(className);
-                mysqlJdbcDriver.compareAndSet(null, found);
+                postgressJdbcDriver.compareAndSet(null, found);
 
                 if (driverPath.isPresent()) {
                     logger.warn(
-                            "\"driver_path\" is set while the MySQL JDBC driver class \"{}\" is found from the PluginClassLoader."
+                            "\"driver_path\" is set while the Postgress JDBC driver class \"{}\" is found from the PluginClassLoader."
                                     + " \"driver_path\" is ignored.", className);
                 }
                 return found;
             }
             catch (final ClassNotFoundException ex) {
-                // Pass-through once.
+                //throw new ConfigException("The MySQL JDBC driver for the class \"" + className + "\" is not found.", ex);
             }
-
-            if (driverPath.isPresent()) {
+            final File root = this.findPluginRoot();
+            final File driverLib = new File(root, "default_jdbc_driver");
+            final File[] files = driverLib.listFiles(new FileFilter() {
+                @Override
+                public boolean accept(final File file)
+                {
+                    return file.isFile() && file.getName().endsWith(".jar");
+                }
+            });
+            if (files == null || files.length == 0) {
+                throw new ConfigException(new ClassNotFoundException(
+                        "The Postgress JDBC driver for the class \"" + className + "\" is not found"
+                                + " in \"default_jdbc_driver\" (" + root.getAbsolutePath() + ")."));
+            }
+            for (final File file : files) {
                 logger.info(
-                        "\"driver_path\" is set to load the MySQL JDBC driver class \"{}\". Adding it to classpath.", className);
-                this.addDriverJarToClasspath(driverPath.get());
-            }
-            else {
-                final File root = this.findPluginRoot();
-                final File driverLib = new File(root, "default_jdbc_driver");
-                final File[] files = driverLib.listFiles(new FileFilter() {
-                    @Override
-                    public boolean accept(final File file)
-                    {
-                        return file.isFile() && file.getName().endsWith(".jar");
-                    }
-                });
-                if (files == null || files.length == 0) {
-                    throw new ConfigException(new ClassNotFoundException(
-                            "The MySQL JDBC driver for the class \"" + className + "\" is not found"
-                                    + " in \"default_jdbc_driver\" (" + root.getAbsolutePath() + ")."));
-                }
-                for (final File file : files) {
-                    logger.info(
-                            "The MySQL JDBC driver for the class \"{}\" is expected to be found"
-                                    + " in \"default_jdbc_driver\" at {}.", className, file.getAbsolutePath());
-                    this.addDriverJarToClasspath(file.getAbsolutePath());
-                }
+                        "The Postgress JDBC driver for the class \"{}\" is expected to be found"
+                                + " in \"default_jdbc_driver\" at {}.", className, file.getAbsolutePath());
+                this.addDriverJarToClasspath(file.getAbsolutePath());
             }
 
             try {
-                // Retrying to find the class from the ClassLoader of the plugin.
+                // If the class is found from the ClassLoader of the plugin, that is prioritized the highest.
                 final Class<? extends java.sql.Driver> found = loadJdbcDriverClassForName(className);
-                mysqlJdbcDriver.compareAndSet(null, found);
+                postgressJdbcDriver.compareAndSet(null, found);
+
+                if (driverPath.isPresent()) {
+                    logger.warn(
+                            "\"driver_path\" is set while the Postgress JDBC driver class \"{}\" is found from the PluginClassLoader."
+                                    + " \"driver_path\" is ignored.", className);
+                }
                 return found;
             }
             catch (final ClassNotFoundException ex) {
-                throw new ConfigException("The MySQL JDBC driver for the class \"" + className + "\" is not found.", ex);
+                throw new ConfigException("The Postgress JDBC driver for the class \"" + className + "\" is not found.", ex);
             }
+
         }
     }
 
@@ -129,7 +132,7 @@ public class PostGresConnection {
         return (Class<? extends java.sql.Driver>) Class.forName(className);
     }
 
-    private static final AtomicReference<Class<? extends Driver>> mysqlJdbcDriver = new AtomicReference<>();
+    private static final AtomicReference<Class<? extends Driver>> postgressJdbcDriver = new AtomicReference<>();
 
     private static final Logger logger = LoggerFactory.getLogger(PostGresConnection.class);
 
